@@ -8,11 +8,11 @@
 
 export const SUPABASE_URL =
   (import.meta.env["VITE_SUPABASE_URL"] as string | undefined) ??
-  "https://pzlzpobetksnoogahksr.supabase.co";
+  "https://aojohianxjjqrvcrpgao.supabase.co";
 
 export const SUPABASE_PUBLISHABLE_KEY =
   (import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string | undefined) ??
-  "sb_publishable_bTgv2XRwcNZUNhlnSopZSg_qiRV0ine";
+  "sb_publishable_xIjd0A1mTs1n7q6sXYUhlg_Hz9qlhYC";
 
 /** The 50 fixed card IDs: "001" … "050". */
 export const CARD_IDS: readonly string[] = Array.from({ length: 50 }, (_, i) =>
