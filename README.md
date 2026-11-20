@@ -50,11 +50,11 @@ Act as a Principal Full-Stack Engineer. Build a complete, production-ready, mobi
    - Modern, clean, professional dark/light mode dashboard optimized for mobile phones (so management can be done directly from a smartphone on-site at a client's shop).
    - Instant optimistic UI updates when editing card details or toggling statuses.
 
-Please generate the complete codebase files with typescript types, Next.js server actions / API handlers, tailwind styling, and step-by-step setup instructions for environment variables. make full in free token limit at once and my supabase db creds are https://pzlzpobetksnoogahksr.supabase.co , sb_publishable_bTgv2XRwcNZUNhlnSopZSg_qiRV0ine , postgresql://postgres:[YOUR-PASSWORD]@db.pzlzpobetksnoogahksr.supabase.co:5432/postgres , supabase login
+Please generate the complete codebase files with typescript types, Next.js server actions / API handlers, tailwind styling, and step-by-step setup instructions for environment variables. make full in free token limit at once and my supabase db creds are https://aojohianxjjqrvcrpgao.supabase.co , sb_publishable_xIjd0A1mTs1n7q6sXYUhlg_Hz9qlhYC , postgresql://postgres:[YOUR-DATABASE-PASSWORD]@db.aojohianxjjqrvcrpgao.supabase.co:5432/postgres , supabase login
 
 supabase init
 
-supabase link --project-ref pzlzpobetksnoogahksr
+supabase link --project-ref aojohianxjjqrvcrpgao
 
 This project was built with [Lovable](https://lovable.dev).
 
@@ -76,3 +76,4 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+# DRFT
