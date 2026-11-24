@@ -7,7 +7,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/lib/supabase";
 
@@ -28,6 +27,8 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+const ADMIN_EMAIL = "krishnasingh15kks@gmail.com";
+
 function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
@@ -41,6 +42,10 @@ function AuthPage() {
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
+    if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
+      toast.error("Access denied. This account is not authorised.");
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
@@ -49,22 +54,6 @@ function AuthPage() {
       return;
     }
     navigate({ to: "/admin", replace: true });
-  }
-
-  async function signUp(e: React.FormEvent) {
-    e.preventDefault();
-    setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: window.location.origin + "/admin" },
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Account created. If email confirmation is on, check your inbox.");
   }
 
   return (
@@ -81,54 +70,39 @@ function AuthPage() {
         <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-sm">
           <h1 className="text-2xl font-bold text-card-foreground">Admin access</h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
-            Only accounts granted the admin role can manage cards.
+            Sign in to manage QR card destinations and analytics.
           </p>
 
-          <Tabs defaultValue="signin" className="mt-6">
-            <TabsList className="w-full">
-              <TabsTrigger value="signin" className="flex-1">
-                Sign in
-              </TabsTrigger>
-              <TabsTrigger value="signup" className="flex-1">
-                Sign up
-              </TabsTrigger>
-            </TabsList>
-
-            {(["signin", "signup"] as const).map((mode) => (
-              <TabsContent key={mode} value={mode}>
-                <form className="space-y-4" onSubmit={mode === "signin" ? signIn : signUp}>
-                  <div className="space-y-2">
-                    <Label htmlFor={`${mode}-email`}>Email</Label>
-                    <Input
-                      id={`${mode}-email`}
-                      type="email"
-                      required
-                      autoComplete="email"
-                      inputMode="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`${mode}-password`}>Password</Label>
-                    <Input
-                      id={`${mode}-password`}
-                      type="password"
-                      required
-                      minLength={6}
-                      autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={busy}>
-                    {busy && <Loader2 className="size-4 animate-spin" />}
-                    {mode === "signin" ? "Sign in" : "Create account"}
-                  </Button>
-                </form>
-              </TabsContent>
-            ))}
-          </Tabs>
+          <form className="mt-6 space-y-4" onSubmit={signIn}>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                autoComplete="email"
+                inputMode="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={6}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={busy}>
+              {busy && <Loader2 className="size-4 animate-spin" />}
+              Sign in
+            </Button>
+          </form>
         </div>
       </main>
     </div>
