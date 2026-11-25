@@ -31,11 +31,14 @@ const resolveCard = createServerFn({ method: "GET" })
 
     // 1. Direct check from Supabase qr_cards table
     try {
+      console.log(`[q.$id] Querying card ${id} from ${supabase.supabaseUrl ?? "unknown"}`);
       const { data: card, error: cardError } = await supabase
         .from("qr_cards")
         .select("destination_url, status")
         .eq("id", id)
         .maybeSingle();
+
+      console.log(`[q.$id] card=${JSON.stringify(card)} error=${cardError?.message ?? "none"}`);
 
       if (!cardError && card) {
         // Strict check: if card is NOT active, DO NOT redirect

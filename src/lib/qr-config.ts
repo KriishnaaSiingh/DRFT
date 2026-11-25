@@ -4,14 +4,29 @@
  * The Supabase URL and publishable (anon) key are public values by design —
  * every row is protected by row-level security. They can be overridden with
  * env vars if the project is ever pointed at a different database.
+ *
+ * We read from both import.meta.env (Vite, replaced at build time) and
+ * process.env (Node.js runtime on Vercel) so server functions work correctly.
  */
 
+// Safe env reader — works in browser bundle, Vite SSR, and raw Node.js
+function getEnv(key: string): string | undefined {
+  if (typeof import.meta !== "undefined" && import.meta.env) {
+    const v = import.meta.env[key] as string | undefined;
+    if (v) return v;
+  }
+  if (typeof process !== "undefined" && process.env) {
+    const v = process.env[key] as string | undefined;
+    if (v) return v;
+  }
+  return undefined;
+}
+
 export const SUPABASE_URL =
-  (import.meta.env["VITE_SUPABASE_URL"] as string | undefined) ??
-  "https://aojohianxjjqrvcrpgao.supabase.co";
+  getEnv("VITE_SUPABASE_URL") ?? "https://aojohianxjjqrvcrpgao.supabase.co";
 
 export const SUPABASE_PUBLISHABLE_KEY =
-  (import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string | undefined) ??
+  getEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ??
   "sb_publishable_xIjd0A1mTs1n7q6sXYUhlg_Hz9qlhYC";
 
 /** The 50 fixed card IDs: "001" … "050". */
@@ -22,7 +37,7 @@ export const CARD_IDS: readonly string[] = Array.from({ length: 50 }, (_, i) =>
 export const TOTAL_CARDS = CARD_IDS.length;
 
 export const QR_BASE_URL =
-  (import.meta.env["VITE_APP_URL"] as string | undefined) ?? "https://drftreviews.vercel.app";
+  getEnv("VITE_APP_URL") ?? "https://drftreviews.vercel.app";
 
 export function getCardQrUrl(id: string): string {
   return `${QR_BASE_URL}/q/${id}`;
