@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { QrCode, ArrowLeft, WifiOff } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/unassigned")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -23,6 +25,39 @@ export const Route = createFileRoute("/unassigned")({
 
 function UnassignedPage() {
   const { id } = useSearch({ from: "/unassigned" });
+  const [checking, setChecking] = useState(!!id);
+
+  // Client-side fallback check: If server SSR had a transient cache/network miss
+  // or old deploy state, check Supabase directly from browser to redirect if card has a URL!
+  useEffect(() => {
+    if (!id) return;
+
+    let isMounted = true;
+    async function checkCard() {
+      try {
+        const { data: card } = await supabase
+          .from("qr_cards")
+          .select("destination_url, status")
+          .eq("id", id)
+          .maybeSingle();
+
+        if (isMounted && card?.destination_url) {
+          window.location.replace(card.destination_url);
+          return;
+        }
+      } catch (err) {
+        console.error("Client fallback check failed:", err);
+      } finally {
+        if (isMounted) setChecking(false);
+      }
+    }
+
+    checkCard();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
 
   return (
     <div className="grid-noise flex min-h-screen flex-col bg-background">

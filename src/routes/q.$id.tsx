@@ -31,37 +31,22 @@ const resolveCard = createServerFn({ method: "GET" })
 
     // 1. Direct check from Supabase qr_cards table
     try {
-      console.log(`[q.$id] Querying card ${id} from ${supabase.supabaseUrl ?? "unknown"}`);
       const { data: card, error: cardError } = await supabase
         .from("qr_cards")
         .select("destination_url, status")
         .eq("id", id)
         .maybeSingle();
 
-      console.log(`[q.$id] card=${JSON.stringify(card)} error=${cardError?.message ?? "none"}`);
-
-      if (!cardError && card) {
-        // Strict check: if card is NOT active, DO NOT redirect
-        if (card.status !== "active" || !card.destination_url) {
-          return { destination: null, error: "inactive" };
-        }
-
-        // Card is active: log the scan in background and return destination
+      if (!cardError && card && card.destination_url) {
+        // If card has a destination URL, return it!
+        // Background log the scan
         Promise.resolve(
           supabase.rpc("resolve_and_log_scan", {
             p_card_id: id,
             p_device_type: deviceType,
             p_user_agent: ua,
           }),
-        )
-          .then(({ error }) => {
-            if (error) {
-              console.error("[q.$id] resolve_and_log_scan error:", error.message);
-            }
-          })
-          .catch((err: unknown) => {
-            console.error("[q.$id] RPC catch:", err);
-          });
+        ).catch(() => {});
 
         return { destination: card.destination_url, error: null };
       }
