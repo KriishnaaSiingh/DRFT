@@ -182,12 +182,14 @@ function EditDialog({ card, onClose, onSave, saving }: EditDialogProps) {
   const [shopName, setShopName] = useState("");
   const [destUrl, setDestUrl] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("inactive");
+  const [statusTouched, setStatusTouched] = useState(false);
 
   useEffect(() => {
     if (card) {
       setShopName(card.shop_name ?? "");
       setDestUrl(card.destination_url ?? "");
       setStatus(card.status);
+      setStatusTouched(false);
     }
   }, [card]);
 
@@ -257,7 +259,13 @@ function EditDialog({ card, onClose, onSave, saving }: EditDialogProps) {
               id="dest-url"
               placeholder="https://search.google.com/local/writereview?placeid=..."
               value={destUrl}
-              onChange={(e) => setDestUrl(e.target.value)}
+              onChange={(e) => {
+                const next = e.target.value;
+                setDestUrl(next);
+                if (!statusTouched) {
+                  setStatus(next.trim() ? "active" : "inactive");
+                }
+              }}
               className={
                 !urlValid
                   ? "border-destructive focus-visible:ring-destructive"
@@ -298,7 +306,10 @@ function EditDialog({ card, onClose, onSave, saving }: EditDialogProps) {
               {destUrl && (
                 <button
                   type="button"
-                  onClick={() => setDestUrl("")}
+                  onClick={() => {
+                    setDestUrl("");
+                    if (!statusTouched) setStatus("inactive");
+                  }}
                   className="rounded-md px-2 py-1 text-[11px] text-destructive hover:bg-destructive/10 transition-colors"
                 >
                   Clear URL
@@ -321,7 +332,13 @@ function EditDialog({ card, onClose, onSave, saving }: EditDialogProps) {
           {/* Status */}
           <div className="space-y-2">
             <Label htmlFor="card-status">Card Status</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as "active" | "inactive")}>
+            <Select
+              value={status}
+              onValueChange={(v) => {
+                setStatusTouched(true);
+                setStatus(v as "active" | "inactive");
+              }}
+            >
               <SelectTrigger id="card-status" className="w-full">
                 <SelectValue />
               </SelectTrigger>
