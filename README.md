@@ -4,7 +4,7 @@ Act as a Principal Full-Stack Engineer. Build a complete, production-ready, mobi
 
 ### Project Context & Specifications:
 
-- Domain format: https://DRFT.vercel.app/q/[001-020]
+- Domain format: https://DRFTreviews.vercel.app
 - Fixed Card Range: 20 fixed QR cards (ID range: `001` through `020`).
 - Target Functionality: Rapid redirection, full administrative CRUD operations, activation/deactivation toggles, and scan analytics.
 
